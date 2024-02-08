@@ -1,6 +1,6 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.urls import reverse
-from .models import Noticia, Categoria
+from .models import Noticia, Categoria, Comentario
 from .forms import NoticiaForm, ComentarioForm
 from django.contrib.auth.decorators import login_required
 
@@ -85,13 +85,11 @@ def ListarNoticias(request):
 #DETALE NOTICIAS CON COMENTARIOS INCLUIDOS
 
 def DetalleNoticia(request, pk):
-    contexto = {}
-
+    
     n = Noticia.objects.get(pk = pk) # SELECT * FROM NOTICIAS WHERE id = 1
-    contexto['noticias'] = n
-
+   
     c = n.comentarios.all()
-    contexto['comentarios'] = c
+    
 
     #BORRAR NOTICIA
     if request.method == 'POST' and 'delete_noticia' in request.POST:
@@ -107,8 +105,14 @@ def DetalleNoticia(request, pk):
                 form.save()
                 return redirect('noticia:detalle', pk=pk)
     else:
-        form = NoticiaForm()
+        form = ComentarioForm()
 
+    contexto = {
+        'noticias' : n,
+        'comentarios' : c,
+        'form' : form,
+
+    }
 
     return render (request, 'noticias/detalle.html', contexto)
 
@@ -128,3 +132,25 @@ def AddNoticia(request):
         form = NoticiaForm()
     
     return render (request, 'noticias/addNoticia.html', {'form':form})
+
+
+@login_required
+def AddComentario(request, noticia_id):
+    
+    noticia = get_object_or_404(Noticia, id = noticia_id)   
+    if request.method == 'POST':
+        contenido = request.POST.get("contenido")
+        usuario = request.user.username
+        #CREACION DE COMENTARIO
+        Comentario.objects.create(noticia = noticia, usuario = usuario, contenido = contenido)
+    
+    return redirect('noticias:detalle', pk = noticia_id)
+
+@login_required
+def BorrarComentario(request, comentario_id):
+    
+    comentario = get_object_or_404(Comentario, id = comentario_id)   
+    if comentario.usuario == request.user.username:
+        comentario.delete()
+
+    return redirect('noticias:detalle', pk = comentario.noticia.pk)

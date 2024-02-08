@@ -9,4 +9,6 @@ urlpatterns = [
     path('', views.ListarNoticias, name='listar'),
     path('detalle/<int:pk>', views.DetalleNoticia, name='detalle'),
     path('addNoticia', views.AddNoticia, name='addnoticia'),
+    path('comentario/add/<int:noticia_id>', views.AddComentario, name='add_comentario'),
+    path('comentario/delete/<int:comentario_id>', views.BorrarComentario, name='delete_comentario'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
