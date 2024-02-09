@@ -160,7 +160,7 @@ def BorrarComentario(request, comentario_id):
 def EditarNoticia(request,pk):
     noticia = get_object_or_404(Noticia, pk = pk)
 
-    # solo el autor puede editar la noticia
+# solo el autor puede editar la noticia
     if noticia.autor != request.user:
         return HttpResponseForbidden("No tenes permiso para editar esta noticia")
     
@@ -168,12 +168,13 @@ def EditarNoticia(request,pk):
         form = NoticiaForm(request.POST, request.FILES, instance = noticia)
         if form.is_valid():
             form.save()
-            return redirect('noticia:detalle', pk = pk)
-        else:
-            form = NoticiaForm(instance=noticia)
-
-    contexto = {
+            return redirect('noticias:detalle', pk = pk)
+    else:
+        form = NoticiaForm(instance=noticia)
+       
+                 
+    context = {
         'form' : form
     }        
 
-    return render(request, 'noticias/editar.html', contexto)
+    return render(request, 'noticias/editar.html', context)
