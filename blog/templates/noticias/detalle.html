@@ -27,6 +27,7 @@
                 {% csrf_token %}
                 {% if comentario.usuario == user.username %}
                     <button type="submit">Borrar</button>
+                    <a href="{% url 'noticias:edit_comentario' comentario_id=comentario.id %}">Editar</a>
                 {% endif %}    
             </form>
         <br>    
@@ -43,4 +44,6 @@
             <a href="{% url 'login' %}">INICIAR SESION</a>
         {% endif %}
         <a href="{% url 'noticias:listar' %}">VOLVER</a>
+         
+        
 {% endblock contenido %}
